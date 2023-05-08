@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
+    <meta charset="UTF-8">
+    <title>Kártyapár</title>
+	<style>
+		.game-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+body{
+            background: #181818;
+            color: white;
+			font-family: arial;
+        }
+
+.card {
+  width: 150px;
+  height: 150px;
+  perspective: 1000px;
+  margin: 10px;
+  position: relative;
+}
+
+.front, .back {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 72px;
+}
+
+.front {
+  background-color: lightgray;
+}
+
+.back {
+  background-color: white;
+  transform: rotateY(180deg);
+}
+
+.flipped .front {
+  transform: rotateY(180deg);
+}
+
+.flipped .back {
+  transform: rotateY(0);
+}
+
+.back {
+  background-color: white;
+  transform: rotateY(180deg);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.back img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.match {
+  background-color: lightgreen;
+  border: 1px solid lightgreen;
+}
+
+.score-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
+  font-size: 36px;
+}
+
+.mismatch {
+  border: 1px solid red;
+}
+
+.miss-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
+  font-size: 36px;
+}
+
+	</style>
+    <link rel="stylesheet" type="text/css" href="app.css">
+  </head>
+  <body>
+
+    <div class="score-container">
+      <p>Helyes Tippek: <span id="score">0</span></p>
+    </div>
+
+    <div class="miss-container">
+      <p>Hibás Tippek: <span id="misses">0</span></p>
+    </div>
+    
+    <div class="game-container">
+      <div class="card" id="card1" data-framework="image1">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros1.jpg">
+        </div>
+      </div>
+      <div class="card" id="card2" data-framework="image2">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros3.jpg">
+        </div>
+      </div>
+      <div class="card" id="card3" data-framework="image1">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros1.jpg">
+        </div>
+      </div>
+      <div class="card" id="card4" data-framework="image2">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros3.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image5">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros12.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image6">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros8.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image6">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros8.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image5">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros12.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image7">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros5.jpg">
+        </div>
+      </div>
+      <div class="card" id="card1" data-framework="image7">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros5.jpg">
+        </div>
+      </div>
+
+      <div class="card" id="card5" data-framework="image3">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros7.jpg">
+        </div>
+      </div>
+      <div class="card" id="card6" data-framework="image3">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros7.jpg">
+        </div>
+      </div>
+      <div class="card" id="card7" data-framework="image4">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros9.jpg">
+        </div>
+      </div>
+      <div class="card" id="card8" data-framework="image4">
+        <div class="front">?</div>
+        <div class="back">
+          <img src="jatekkepek/paros9.jpg">
+        </div>
+      </div>
+    </div>
+
+  
+    
+  </body>
+  <script>
+	const cards = document.querySelectorAll('.card');
+let flippedCard = false;
+let lockBoard = false;
+let firstCard, secondCard;
+
+function flipCard() {
+  if (lockBoard) return;
+  if (this === firstCard) return;
+
+  this.classList.add('flipped');
+
+  if (!flippedCard) {
+    flippedCard = true;
+    firstCard = this;
+
+    return;
+  }
+
+  secondCard = this;
+  checkForMatch();
+}
+
+function checkForMatch() {
+  let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
+
+  isMatch ? disableCards() : unflipCards();
+}
+
+function disableCards() {
+  firstCard.classList.add('match');
+  secondCard.classList.add('match');
+  firstCard.removeEventListener('click', flipCard);
+  secondCard.removeEventListener('click', flipCard);
+
+  updateScore();
+
+  let cards = document.querySelectorAll('.card');
+  let matchedCards = document.querySelectorAll('.match');
+
+  if (cards.length === matchedCards.length) {
+    checkWin();
+  }
+
+  resetBoard();
+}
+
+
+function updateScore() {
+  let score = document.getElementById('score');
+  score.textContent = parseInt(score.textContent) + 1;
+}
+
+
+
+function unflipCards() {
+  lockBoard = true;
+
+  firstCard.classList.add('mismatch');
+  secondCard.classList.add('mismatch');
+
+  updateMisses();
+
+  setTimeout(() => {
+    firstCard.classList.remove('flipped', 'mismatch');
+    secondCard.classList.remove('flipped', 'mismatch');
+
+    resetBoard();
+  }, 1500);
+}
+
+function updateMisses() {
+  let misses = document.getElementById('misses');
+  misses.textContent = parseInt(misses.textContent) + 1;
+}
+
+function checkWin() {
+  let score = document.getElementById('score').textContent;
+  let misses = document.getElementById('misses').textContent;
+
+  if (score > misses) {
+    alert("Nyertél! Gratulálok!");
+  } else {
+    alert("Vesztettél! Több sikert legközelebb!");
+  }
+}
+
+
+
+function resetBoard() {
+  [flippedCard, lockBoard] = [false, false];
+  [firstCard, secondCard] = [null, null];
+}
+
+(function shuffle() {
+  cards.forEach(card => {
+    let randomPos = Math.floor(Math.random() * 12);
+    card.style.order = randomPos;
+  });
+})();
+
+
+
+cards.forEach(card => card.addEventListener('click', flipCard));
+  </script>
+
+</html>
